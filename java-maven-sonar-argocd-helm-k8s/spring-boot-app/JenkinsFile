@@ -52,16 +52,17 @@ pipeline {
             GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
             GIT_USER_NAME = "sameerpatlekar"
         }
-            steps {
-                script {
+          steps {
+            script {
                     // Get the previous successful build number
-                    def previousBuild = currentBuild.previousBuild
-                    while (previousBuild != null && previousBuild.result != 'SUCCESS') {
-                        previousBuild = previousBuild.previousBuild
-                    }
-                    def previousBuildNumber = previousBuild?.number ?: '19' // Default to 19 if no previous successful build is found
+                  def previousBuild = currentBuild.previousBuild
+                  while (previousBuild != null && previousBuild.result != 'SUCCESS') {
+                      previousBuild = previousBuild.previousBuild
+                  }
+                  def previousBuildNumber = previousBuild?.number ?: '19' // Default to 19 if no previous successful build is found
 
-                    // Update the deployment image version
+                  // Update the deployment image version
+                  withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     sh """
                         git config user.email "sameer.gcp.jam@gmail.com"
                         git config user.name "Sameer Patlekar"
@@ -76,4 +77,5 @@ pipeline {
             }
         }
     }
+}
 }
