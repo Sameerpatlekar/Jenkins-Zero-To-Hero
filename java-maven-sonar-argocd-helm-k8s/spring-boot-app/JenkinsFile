@@ -22,10 +22,9 @@ agent any
         sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
       }
     }
-    stage('Static Code Analysis') {
-      stage('SonarQube analysis') {
-    withSonarQubeEnv('sonar') {
-      sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package sonar:sonar'
+    stage('SonarQube analysis') {
+      withSonarQubeEnv('sonar') {
+        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package sonar:sonar'
     } // submitted SonarQube taskId is automatically attached to the pipeline context
   }
 /*
@@ -37,7 +36,7 @@ agent any
           sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
         }
       }
-    }
+    
 */    
     stage('Build and Push Docker Image') {
       environment {
