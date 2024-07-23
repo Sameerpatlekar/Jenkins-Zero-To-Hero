@@ -20,10 +20,12 @@ pipeline {
       }
     }
     stage('SonarQube analysis') {
-      withSonarQubeEnv('sonar') {
-        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package sonar:sonar'
-    } // submitted SonarQube taskId is automatically attached to the pipeline context
-  }
+        steps{
+            withSonarQubeEnv('sonar') {
+                sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package sonar:sonar'
+            } // submitted SonarQube taskId is automatically attached to the pipeline context
+        }
+    }
 /*
       environment {
         SONAR_URL = "http://18.132.49.254:9000"
@@ -83,3 +85,4 @@ pipeline {
     }
 }
 }
+
