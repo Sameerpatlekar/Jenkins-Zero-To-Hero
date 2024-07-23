@@ -1,11 +1,13 @@
 pipeline {
+agent any
+/*
   agent {
     docker {
       image 'abhishekf5/maven-abhishek-docker-agent:v1'
       args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
     }
   }
-  
+*/  
   stages {
     stage('Checkout') {
       steps {
@@ -21,6 +23,12 @@ pipeline {
       }
     }
     stage('Static Code Analysis') {
+      stage('SonarQube analysis') {
+    withSonarQubeEnv('sonar') {
+      sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package sonar:sonar'
+    } // submitted SonarQube taskId is automatically attached to the pipeline context
+  }
+/*
       environment {
         SONAR_URL = "http://18.132.49.254:9000"
       }
@@ -30,7 +38,7 @@ pipeline {
         }
       }
     }
-    
+*/    
     stage('Build and Push Docker Image') {
       environment {
         DOCKER_IMAGE = "sameerpatlekar/jenkins:${BUILD_NUMBER}"
@@ -54,7 +62,7 @@ pipeline {
         }
           steps {
             script {
-                    // Get the previous successful build number
+                  // Get the previous successful build number
                   def previousBuild = currentBuild.previousBuild
                   while (previousBuild != null && previousBuild.result != 'SUCCESS') {
                       previousBuild = previousBuild.previousBuild
@@ -72,7 +80,7 @@ pipeline {
                         git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
                         git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
-                    """
+                      """
                 }
             }
         }
